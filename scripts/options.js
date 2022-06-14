@@ -1,15 +1,42 @@
-import './components/project-list.js';
+import { html, render } from '../deps/htm-preact.js';
+import getSyncUrls from './utils/getSyncProjects.js';
 
-async function options() {
-    // await browser.storage.sync.set({ projects: [ {
-    //   name: 'Milo',
-    //   repoUrl: 'https://github.com/adobecom/milo'
-    // }] });
+function AddProject() {
+  function clicked(e) {
+    e.preventDefault();
+    console.log('clicked')
+  }
+
+  return html`
+    <form>
+      <button onClick=${clicked}>Add Project</button>
+    </form>
+  `;
 }
 
-options();
+function ProjectList() {
+  const [projects, setProjects] = useState([]);
 
-// chrome.runtime.sendMessage({ message: "get_name" }, response => {
-//     if (response.message !== 'success') return;
-//     document.querySelector('div').innerHTML = `Hello ${response.payload}`;
-// });
+  useEffect(() => {
+    let haveProjects = false;
+    getSyncProjects(projects, setProjects, haveProjects);
+    return () => haveProjects = true;
+  }, []);
+
+  // const { projects } = await browser.storage.sync.get('projects');
+  // const items = projects.map((project, index) =>
+  //   html` <div>${project.name}</div>`
+  // );
+
+  return html`<div>hello</div>`;
+}
+
+function Options() {
+  return html`
+    <${AddProject} />
+    <${ProjectList} />
+  `;
+}
+
+const app = html`<${Options} />`;
+render(app, document.body);
